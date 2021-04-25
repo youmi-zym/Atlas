@@ -20,15 +20,16 @@ We provide a docker image `Docker/Dockerfile` with all the dependencies.
 
 Or you can install them yourself:
 ```
-conda install -y pytorch=1.5.0 torchvision=0.6.0 cudatoolkit=10.2 -c pytorch
-conda install opencv
+# Ubuntu 20.04
+conda install -y pytorch=1.8.1 torchvision=0.9.1 cudatoolkit=11.1 -c pytorch
 pip install \
-  open3d>=0.10.0.0 \
-  trimesh>=3.7.6 \
+  open3d>=0.12.0.0 \
+  trimesh>=3.9.14 \
   pyquaternion>=0.9.5 \
-  pytorch-lightning>=0.8.5 \
-  pyrender>=0.1.43
-python -m pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.5/index.html
+  pytorch-lightning>=1.2.8 \
+  pyrender>=0.1.45 \
+  opencv-python>=4.5.1.48 \
+python -m pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.8/index.html
 ```
 For 16bit mixed precision (default training setting) you will also need [NVIDIA apex](https://github.com/NVIDIA/apex)
 ```
@@ -68,28 +69,36 @@ python prepare_data.py --path DATAROOT --path_meta METAROOT --dataset sample
 
 #### Scannet
 Download and extract Scannet by following the instructions provided at http://www.scan-net.org/.
-You also need to download the train/val/test splits and the label mapping from https://github.com/ScanNet/ScanNet (Benchmark Tasks).
+You can also export the color, depth, pose, intrinsics use the command below:
+```bash
+conda create -n proc_scannet python=2.7
+pip install imageio==0.2.6 opencv-python=4.2.0.32 numpy
+
+# e.g., sh ./atlas/datasets/export_scannet.sh 0 ./log.txt
+sh ./atlas/datasets/export_scannet.sh $(FROM_WHICH_SCENE_TO_PROCESS) $(LOG_FILE_PATH)
+```
+You also need to download the train/val/test splits and the label mapping from https://github.com/ScanNet/ScanNet (Tasks/Benchmark/).
 The directory structure should look like:
 ```
 DATAROOT
-└───scannet
-│   └───scans
-│   |   └───scene0000_00
-│   |       └───color
-│   |       │   │   0.jpg
-│   |       │   │   1.jpg
-│   |       │   │   ...
-│   |       │   ...
-│   └───scans_test
-│   |       └───color
-│   |       │   │   0.jpg
-│   |       │   │   1.jpg
-│   |       │   │   ...
-│   |       │   ...
-|   └───scannetv2-labels.combined.tsv
-|   └───scannetv2_test.txt
-|   └───scannetv2_train.txt
-|   └───scannetv2_val.txt
+└───scans
+|   └───scene0000_00
+|       └───color
+|       │   │   0.jpg
+|       │   │   1.jpg
+|       │   │   ...
+|       │   ...
+└───scans_test
+|   └───scene0707_00
+|       └───color
+|       │   │   0.jpg
+|       │   │   1.jpg
+|       │   │   ...
+|       │   ...
+└───scannetv2-labels.combined.tsv
+└───scannetv2_test.txt
+└───scannetv2_train.txt
+└───scannetv2_val.txt
 ```
 Next run our data preperation script which parses the raw data format into our common json format (more info [here](atlas/datasets/README.md))
 (note that we store our derivered data in a seperate folder `METAROOT` to prevent pollution of the original data).

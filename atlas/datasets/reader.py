@@ -25,7 +25,7 @@ def sort_nicely(l):
 parser = argparse.ArgumentParser()
 # data paths
 parser.add_argument('--root', required=True, help='path to DIR, e.g., /path/to/scans, scans_test and so on')
-parser.add_argument('--index', required=True, type=int,  help='ID from $index sense will be read, e.g., setting 2 means all senses(order in alphabet) from 2 will be read ')
+parser.add_argument('--index', required=True, type=int,  help='scene files are sorted in order, and process from $index sense')
 parser.add_argument('--log', type=str, default="./log.txt", help="data exporting log file path")
 parser.add_argument('--export_depth_images', dest='export_depth_images', action='store_true')
 parser.add_argument('--export_color_images', dest='export_color_images', action='store_true')
